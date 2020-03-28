@@ -1,0 +1,257 @@
+{
+    "____comment": "This file was generated with eosio-abigen. DO NOT EDIT ",
+    "version": "eosio::abi/1.1",
+    "types": [],
+    "structs": [
+        {
+            "name": "adduser",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "closeevent",
+            "base": "",
+            "fields": [
+                {
+                    "name": "event_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "option_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "outcome_text",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "event_outcome",
+            "base": "",
+            "fields": [
+                {
+                    "name": "event_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "option_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "outcome_text",
+                    "type": "string"
+                },
+                {
+                    "name": "distribution_status",
+                    "type": "uint8"
+                }
+            ]
+        },
+        {
+            "name": "event_registration",
+            "base": "",
+            "fields": [
+                {
+                    "name": "event_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "event_type",
+                    "type": "uint8"
+                },
+                {
+                    "name": "event_text",
+                    "type": "string"
+                },
+                {
+                    "name": "event_closes_at",
+                    "type": "string"
+                },
+                {
+                    "name": "event_status",
+                    "type": "uint8"
+                }
+            ]
+        },
+        {
+            "name": "option_registration",
+            "base": "",
+            "fields": [
+                {
+                    "name": "option_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "option_type",
+                    "type": "uint64"
+                },
+                {
+                    "name": "event_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "option_text",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "regevent",
+            "base": "",
+            "fields": [
+                {
+                    "name": "event_type",
+                    "type": "uint8"
+                },
+                {
+                    "name": "event_text",
+                    "type": "string"
+                },
+                {
+                    "name": "event_closes_at",
+                    "type": "string"
+                }
+            ]
+        },
+        {
+            "name": "registered_users",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "regoption",
+            "base": "",
+            "fields": [
+                {
+                    "name": "option_type",
+                    "type": "uint64"
+                },
+                {
+                    "name": "event_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "option_text",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "selection",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                },
+                {
+                    "name": "option_id",
+                    "type": "uint32"
+                },
+                {
+                    "name": "event_id",
+                    "type": "uint32"
+                }
+            ]
+        },
+        {
+            "name": "user_selection",
+            "base": "",
+            "fields": [
+                {
+                    "name": "id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "user",
+                    "type": "name"
+                },
+                {
+                    "name": "event_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "option_id",
+                    "type": "uint64"
+                }
+            ]
+        }
+    ],
+    "actions": [
+        {
+            "name": "adduser",
+            "type": "adduser",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "closeevent",
+            "type": "closeevent",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "regevent",
+            "type": "regevent",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "regoption",
+            "type": "regoption",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "selection",
+            "type": "selection",
+            "ricardian_contract": ""
+        }
+    ],
+    "tables": [
+        {
+            "name": "options",
+            "type": "option_registration",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "outcome",
+            "type": "event_outcome",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "regevents",
+            "type": "event_registration",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "selection",
+            "type": "user_selection",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "users",
+            "type": "registered_users",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        }
+    ],
+    "ricardian_clauses": [],
+    "variants": []
+}
