@@ -7,30 +7,34 @@ CONTRACT fantasy : public contract {
   public:
     using contract::contract;
 
+    // action to add new user
     ACTION adduser(name user);
 
-    ACTION selection(name user, uint32_t option_id, uint32_t event_id); 
+    // action to update verification status user
+    ACTION verifyuser(name user);
 
-    ACTION regevent(
-      uint8_t event_type, 
-      string event_text, 
-      string event_closes_at);
+    // action to add new distrbution event and associated options for token distribution
+    ACTION regdistevent(event_id, vector<uint8_t> option_ids, date event_close_time);
 
-    ACTION regoption(
-      uint64_t option_type,
-      uint64_t event_id,
-      uint64_t option_text);  
+    // action to add winning option for a distribution event
+    ACTION addoutcome(event_id, option_id);
 
-    ACTION closeevent(
-      uint64_t event_id,
-      uint64_t option_id,
-      string outcome_text); 
+    // action for token distribution for a closed distribution event
+    ACTION disttoken(event_id); 
 
-    ACTION openfansel(
-      name user,
-      vector<uint64_t> depending_events,
-      vector<uint64_t> selection_data
-    );   
+    // action to add user selection for a distribution event
+    ACTION adddisusrsel(name user, event_id, option_id);
+
+    // action to register fantasy events, its rules and associated players
+    ACTION regfanevent(fantasy_event_id, cost_limit, max_players, max_players_per_team, 
+          max_bat, max_bowl, max_wk, max_ar, max_participants, base_player_data);
+
+    // action to add user selection for fantasy events
+    ACTION addfanusrsel(name user, fantasy_event_id,
+        uint8_t weight, vector<uint32_t> selected_player_ids);  
+
+    // action to calculate score for fantasy event and reward coins to winners
+    ACTION scorereward(scorecard??, fantasy_event_id)
   
 
   private:
@@ -62,8 +66,9 @@ CONTRACT fantasy : public contract {
       uint128_t user_selection_id;
       uint32_t fantasy_event_id;  
       name user;
-      uint8_t weight;
+      uint16_t weight;
       vector<uint32_t> selected_players;
+      uint16_t user_score;
       auto primary_key() const { return user_selection_id; }
     };
     typedef multi_index<name("fantasyus"), fantasy_user_selection> fantasy_user_selection_table;
