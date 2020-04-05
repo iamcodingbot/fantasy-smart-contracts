@@ -36,104 +36,82 @@ CONTRACT fantasy : public contract {
   private:
 
     struct player {
-      uint64_t player_id;
-      uint64_t team_id;
+      uint32_t player_id;
+      uint16_t team_id;
       uint8_t cost;
       uint8_t player_type_id;
     };
 
     TABLE fantasy_meta_data {
-      uint8_t fantasy_event_id;      
-      uint64_t total_cost_limit;
-      uint64_t max_players;
-      uint64_t max_players_per_team;
-      uint64_t max_bat;
-      uint64_t max_bowl;
-      uint64_t max_wk;
-      uint64_t max_ar;
-      uint64_t max_participants;
+      uint32_t fantasy_event_id;      
+      uint16_t total_cost_limit;
+      uint8_t max_players;
+      uint8_t max_players_per_team;
+      uint8_t max_bat;
+      uint8_t max_bowl;
+      uint8_t max_wk;
+      uint8_t max_ar;
+      uint8_t max_participants;
       vector<player> base_player_data;
       uint8_t fantasy_event_status;
       auto primary_key() const { return fantasy_event_id;}
     };
     typedef multi_index<name("fantasymd"), fantasy_meta_data> fantasy_meta_data_table;
 
-    TABLE fantasy_user_selections {
-      uint64_t user_selection_id;
-      uint64_t fantasy_event_id;
+    TABLE fantasy_user_selection {
+      uint128_t user_selection_id;
+      uint32_t fantasy_event_id;  
       name user;
-      uint64_t weight;
-      vector<uint64_t> selected_players;
+      uint8_t weight;
+      vector<uint32_t> selected_players;
       auto primary_key() const { return user_selection_id; }
     };
-    typedef multi_index<name("fantasyus"), fantasy_user_selections> fantasy_user_selections_table;
+    typedef multi_index<name("fantasyus"), fantasy_user_selection> fantasy_user_selection_table;
 
+    enum user_status: uint8_t {
+      NOT_VERIFIED= 0,
+      VERIFIED=1 
+    };
 
     TABLE registered_users {
       name user;
+      uint8_t user_status;
       auto primary_key() const { return user.value; }
     };
     typedef multi_index<name("users"), registered_users> users_table;
 
-   enum event_status: uint64_t {
+   enum event_status: uint8_t {
       INITIATING= 0,
-      OPEN= 1,
-      STARTING_NOVOTE= 2,
-      ONGOING_NOVOTE= 3,
-      CLOSED= 4 
-    };
-
-    enum distribution_status: uint8_t {
-      REGISTERED = 0,
-      STARTED= 1,
-      ONGOING= 2,
-      DONE = 3
+      VOTE_STARTING= 1,
+      VOTE_ENDED= 2,
+      CLOSED= 3,
+      DISTRIBUTION_STARTED= 4,
+      DISTRIBUTION_ENDED= 5 
     };
 
     TABLE distribution_event_registration {
-      uint64_t event_id;
+      uint32_t event_id;
+      vector<uint32_t> option_id;
       date event_close_time;
       uint8_t event_status = INITIATING;
-      auto primary_key() const { return event_id; }
-    };
-    typedef multi_index<name("regevents"), event_registration> events_table;
-
-
-   TABLE option_registration {
-      uint64_t option_id;
-      uint64_t event_id;
-      auto primary_key() const { return option_id;}
-      uint64_t event_key() const {return event_id;}
-    };
-    typedef multi_index<
-      name("options"), 
-      option_registration,
-      indexed_by<name("eventkey"), const_mem_fun<option_registration, uint64_t, &option_registration::event_key>>
-    > options_table;
-
-
-  TABLE event_outcome {
-      uint64_t event_id;
-      uint64_t option_id;
-      uint8_t distribution_status = REGISTERED;
+      uint32_t outcome_option_id;
       date distribution_end_time;
       auto primary_key() const { return event_id; }
     };
-    typedef multi_index<name("outcome"), event_outcome> outcome_table;
+    typedef multi_index<name("disteventreg"), distribution_event_registration> distribution_event_registration_table;
 
-
-    TABLE user_selection {
-      uint64_t id;
+    TABLE distribution_user_selection {
+      uint128_t selection_id;
       name user;
-      uint64_t  event_id;
-      uint64_t option_id;
-      uint64_t primary_key() const { return id; }
+      uint32_t  event_id;
+      uint32_t option_id;
+      auto primary_key() const { return selection_id; }
       uint128_t user_key() const {
         return user.value;
       }
     };
-    typedef multi_index<name("selection"), user_selection,
+    typedef multi_index<name("distusersel"), distribution_user_selection,
     indexed_by<name("userkey"), 
-    const_mem_fun<user_selection, uint128_t, &user_selection::user_key>>
-    > selection_table;
+    const_mem_fun<distribution_user_selection, uint128_t, &distribution_user_selection::user_key>>
+    > distribution_user_selection_table;
 };
