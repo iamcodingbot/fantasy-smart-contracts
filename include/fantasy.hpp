@@ -21,12 +21,62 @@ CONTRACT fantasy : public contract {
       uint64_t event_id,
       uint64_t option_text);  
 
-    ACTION closeevent(uint64_t event_id,
+    ACTION closeevent(
+      uint64_t event_id,
       uint64_t option_id,
-      string outcome_text);  
+      string outcome_text); 
+
+    ACTION openfansel(
+      name user,
+      vector<uint64_t> depending_events,
+      vector<uint64_t> selection_data
+    );   
   
 
   private:
+
+    enum player_attributes: uint8_t {
+      BAT = 0,
+      BOWL = 1,
+      WK = 2,
+      AR =3
+    };
+
+    struct selection {
+      uint64_t player_id;
+      uint8_t cost;
+      uint8_t team_id;
+      uint8_t player_type_id;
+    };
+
+    TABLE fantasy_events {
+      uint64_t fantasy_event_id;
+      vector<uint64_t> depending_events;
+      vector<uint64_t> open_events;
+      vector<uint64_t> closed_events;
+      auto primary_key() const { return fantasy_event_id;}
+    };
+    typedef multi_index<name("fanevents"), public_fantasy_selection> public_fantasy_selection_table;
+
+    TABLE players {
+        uint64_t event_player_id;
+        uint64_t event_id;
+        uint64_t player_id;
+        uint64_t cost;
+        uint64_t team_id;
+        uint64_t player_type_id;
+    };
+
+    TABLE public_fantasy_selection {
+      uint64_t selection_id;
+      uint64_t fantasy_event_id;
+      uint64_t weight;
+      name user;
+      vector<uint64_t> selectiondata;
+      auto primary_key() const { return selection_id; }
+    };
+    typedef multi_index<name("pfselection"), public_fantasy_selection> public_fantasy_selection_table;
+
 
     TABLE registered_users {
       name user;
