@@ -35,47 +35,38 @@ CONTRACT fantasy : public contract {
 
   private:
 
-    enum player_attributes: uint8_t {
-      BAT = 0,
-      BOWL = 1,
-      WK = 2,
-      AR =3
-    };
-
-    struct selection {
+    struct player {
       uint64_t player_id;
+      uint64_t team_id;
       uint8_t cost;
-      uint8_t team_id;
       uint8_t player_type_id;
     };
 
-    TABLE fantasy_events {
-      uint64_t fantasy_event_id;
-      vector<uint64_t> depending_events;
-      vector<uint64_t> open_events;
-      vector<uint64_t> closed_events;
+    TABLE fantasy_meta_data {
+      uint8_t fantasy_event_id;      
+      uint64_t total_cost_limit;
+      uint64_t max_players;
+      uint64_t max_players_per_team;
+      uint64_t max_bat;
+      uint64_t max_bowl;
+      uint64_t max_wk;
+      uint64_t max_ar;
+      uint64_t max_participants;
+      vector<player> base_player_data;
+      uint8_t fantasy_event_status;
       auto primary_key() const { return fantasy_event_id;}
     };
-    typedef multi_index<name("fanevents"), public_fantasy_selection> public_fantasy_selection_table;
+    typedef multi_index<name("fantasymd"), fantasy_meta_data> fantasy_meta_data_table;
 
-    TABLE players {
-        uint64_t event_player_id;
-        uint64_t event_id;
-        uint64_t player_id;
-        uint64_t cost;
-        uint64_t team_id;
-        uint64_t player_type_id;
-    };
-
-    TABLE public_fantasy_selection {
-      uint64_t selection_id;
+    TABLE fantasy_user_selections {
+      uint64_t user_selection_id;
       uint64_t fantasy_event_id;
-      uint64_t weight;
       name user;
-      vector<uint64_t> selectiondata;
-      auto primary_key() const { return selection_id; }
+      uint64_t weight;
+      vector<uint64_t> selected_players;
+      auto primary_key() const { return user_selection_id; }
     };
-    typedef multi_index<name("pfselection"), public_fantasy_selection> public_fantasy_selection_table;
+    typedef multi_index<name("fantasyus"), fantasy_user_selections> fantasy_user_selections_table;
 
 
     TABLE registered_users {
@@ -99,11 +90,9 @@ CONTRACT fantasy : public contract {
       DONE = 3
     };
 
-    TABLE event_registration {
+    TABLE distribution_event_registration {
       uint64_t event_id;
-      uint8_t event_type;
-      string event_text;
-      string event_closes_at;
+      date event_close_time;
       uint8_t event_status = INITIATING;
       auto primary_key() const { return event_id; }
     };
@@ -112,10 +101,8 @@ CONTRACT fantasy : public contract {
 
    TABLE option_registration {
       uint64_t option_id;
-      uint64_t option_type;
       uint64_t event_id;
-      uint64_t option_text;
-      auto primary_key() const { return option_id; }
+      auto primary_key() const { return option_id;}
       uint64_t event_key() const {return event_id;}
     };
     typedef multi_index<
@@ -128,8 +115,8 @@ CONTRACT fantasy : public contract {
   TABLE event_outcome {
       uint64_t event_id;
       uint64_t option_id;
-      string outcome_text;
       uint8_t distribution_status = REGISTERED;
+      date distribution_end_time;
       auto primary_key() const { return event_id; }
     };
     typedef multi_index<name("outcome"), event_outcome> outcome_table;
@@ -137,7 +124,7 @@ CONTRACT fantasy : public contract {
 
     TABLE user_selection {
       uint64_t id;
-      name    user;
+      name user;
       uint64_t  event_id;
       uint64_t option_id;
       uint64_t primary_key() const { return id; }
