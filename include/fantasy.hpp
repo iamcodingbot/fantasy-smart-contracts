@@ -10,21 +10,24 @@ CONTRACT fantasy : public contract {
     // action to add new user and modify user status.
     ACTION addmoduser(name user, uint8_t status);
 
-    // action to add new distrbution event and associated options for token distribution
+    // action to add/modify distrbution event and associated options for token distribution
     ACTION regdistevent(uint32_t event_id, vector<uint8_t> option_ids, uint64_t event_close_time);
 
     // action to add winning option for a distribution event
-    ACTION addoutcome(event_id, option_id);
+    ACTION opendisevent(uint32_t event_id);
+
+    // action to add winning option for a distribution event
+    ACTION addoutcome(uint32_t event_id, uint32_t option_id);
 
     // action for token distribution for a closed distribution event
-    ACTION disttoken(event_id); 
+    ACTION disttoken(uint32_t event_id); 
 
     // action to add user selection for a distribution event
-    ACTION adddisusrsel(name user, event_id, option_id);
+    ACTION adddisusrsel(name user, uint32_t event_id, uint32_t option_id);
 
     // action to register fantasy events, its rules and associated players
-    ACTION regfanevent(fantasy_event_id, cost_limit, max_players, max_players_per_team, 
-          max_bat, max_bowl, max_wk, max_ar, max_participants, base_player_data);
+    ACTION regfanevent(uint32_t fantasy_event_id, uint16_t cost_limit, uint8_t max_players, uint8_t max_players_per_team, 
+          uint8_t max_bat, uint8_t max_bowl, uint8_t max_wk, uint8_t max_ar, uint32_t max_participants, player base_player_data);
 
     // action to add user selection for fantasy events
     ACTION addfanusrsel(name user, fantasy_event_id,
@@ -51,11 +54,9 @@ CONTRACT fantasy : public contract {
 
    enum event_status: uint8_t {
       INITIATING= 0,
-      VOTE_STARTING= 1,
-      VOTE_ENDED= 2,
-      CLOSED= 3,
-      DISTRIBUTION_STARTED= 4,
-      DISTRIBUTION_ENDED= 5 
+      OPEN= 1,
+      CLOSED= 2,
+      DISTRIBUTION_CLOSED= 3 
     };
 
     TABLE distribution_event_registration {
@@ -100,7 +101,7 @@ CONTRACT fantasy : public contract {
       uint8_t max_bowl;
       uint8_t max_wk;
       uint8_t max_ar;
-      uint8_t max_participants;
+      uint32_t max_participants;
       vector<player> base_player_data;
       uint8_t fantasy_event_status;
       auto primary_key() const { return fantasy_event_id;}
