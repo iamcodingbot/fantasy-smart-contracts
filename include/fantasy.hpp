@@ -7,19 +7,25 @@ CONTRACT fantasy : public contract {
   public:
     using contract::contract;
 
-    // action to add new user and modify user status.
+    // action to add new user.
     ACTION initiateuser(name user);
 
-    // action to add new user and modify user status.
+    /* action to indicate successful kyc. user will be able to 
+    *  participate but (TODO)funds will not be available for claiming
+    */
     ACTION kycuser(name user);
 
-    // action to add new user and modify user status.
+    /*
+    * action to block a user. user will not be able to participate 
+    * in any event and (TODO)funds will be given for any open event 
+    * in which user is participating
+    */ 
     ACTION blockuser(name user);
 
-    // action to add/modify distrbution event and associated options for token distribution
+    // action to add/modify distribution event and associated options for token distribution
     ACTION adddistevent(uint32_t event_id, vector<uint32_t> option_ids, uint64_t event_close_time);
 
-    // action to add winning option for a distribution event
+    // action to open an event for voting
     ACTION openvoting(uint32_t event_id);
 
     // action to add winning option for a distribution event
