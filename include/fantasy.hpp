@@ -8,34 +8,25 @@ CONTRACT fantasy : public contract {
     using contract::contract;
 
     // action to add new user and modify user status.
-    ACTION addmoduser(name user, uint8_t status);
+    ACTION initiateuser(name user);
+
+    // action to add new user and modify user status.
+    ACTION kycuser(name user);
+
+    // action to add new user and modify user status.
+    ACTION blockuser(name user);
 
     // action to add/modify distrbution event and associated options for token distribution
-    ACTION regdistevent(uint32_t event_id, vector<uint8_t> option_ids, uint64_t event_close_time);
+    ACTION adddistevent(uint32_t event_id, vector<uint32_t> option_ids, uint64_t event_close_time);
 
     // action to add winning option for a distribution event
-    ACTION opendisevent(uint32_t event_id);
+    ACTION openvoting(uint32_t event_id);
 
     // action to add winning option for a distribution event
     ACTION addoutcome(uint32_t event_id, uint32_t option_id);
 
-    // action for token distribution for a closed distribution event
-    ACTION disttoken(uint32_t event_id); 
-
     // action to add user selection for a distribution event
-    ACTION adddisusrsel(name user, uint32_t event_id, uint32_t option_id);
-
-    // action to register fantasy events, its rules and associated players
-    ACTION regfanevent(uint32_t fantasy_event_id, uint16_t cost_limit, uint8_t max_players, uint8_t max_players_per_team, 
-          uint8_t max_bat, uint8_t max_bowl, uint8_t max_wk, uint8_t max_ar, uint32_t max_participants, player base_player_data);
-
-    // action to add user selection for fantasy events
-    ACTION addfanusrsel(name user, fantasy_event_id,
-        uint8_t weight, vector<uint32_t> selected_player_ids);  
-
-    // action to calculate score for fantasy event and reward coins to winners
-    ACTION scorereward(scorecard??, fantasy_event_id)
-  
+    ACTION useroption(name user, uint32_t event_id, uint32_t option_id);
 
   private:
 
@@ -59,16 +50,16 @@ CONTRACT fantasy : public contract {
       DISTRIBUTION_CLOSED= 3 
     };
 
-    TABLE distribution_event_registration {
+    TABLE distribution_event {
       uint32_t event_id;
       vector<uint32_t> option_ids;
-      uint32_t event_close_time;
+      uint64_t event_close_time;
       uint8_t event_status = INITIATING;
       uint32_t outcome_option_id;
-      uint32_t distribution_end_time;
+      uint64_t distribution_end_time;
       auto primary_key() const { return event_id; }
     };
-    typedef multi_index<name("disteventreg"), distribution_event_registration> distribution_event_registration_table;
+    typedef multi_index<name("disteventreg"), distribution_event> distribution_event_registration_table;
 
     TABLE distribution_user_selection {
       uint128_t selection_id;
