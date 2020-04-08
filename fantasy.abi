@@ -4,7 +4,39 @@
     "types": [],
     "structs": [
         {
-            "name": "adduser",
+            "name": "adddistevent",
+            "base": "",
+            "fields": [
+                {
+                    "name": "event_id",
+                    "type": "uint32"
+                },
+                {
+                    "name": "option_ids",
+                    "type": "uint32[]"
+                },
+                {
+                    "name": "event_close_time",
+                    "type": "uint64"
+                }
+            ]
+        },
+        {
+            "name": "addoutcome",
+            "base": "",
+            "fields": [
+                {
+                    "name": "event_id",
+                    "type": "uint32"
+                },
+                {
+                    "name": "option_id",
+                    "type": "uint32"
+                }
+            ]
+        },
+        {
+            "name": "blockuser",
             "base": "",
             "fields": [
                 {
@@ -14,108 +46,186 @@
             ]
         },
         {
-            "name": "closeevent",
+            "name": "distribution_event",
             "base": "",
             "fields": [
                 {
                     "name": "event_id",
+                    "type": "uint32"
+                },
+                {
+                    "name": "option_ids",
+                    "type": "uint32[]"
+                },
+                {
+                    "name": "event_close_time",
                     "type": "uint64"
-                },
-                {
-                    "name": "option_id",
-                    "type": "uint64"
-                },
-                {
-                    "name": "outcome_text",
-                    "type": "string"
-                }
-            ]
-        },
-        {
-            "name": "event_outcome",
-            "base": "",
-            "fields": [
-                {
-                    "name": "event_id",
-                    "type": "uint64"
-                },
-                {
-                    "name": "option_id",
-                    "type": "uint64"
-                },
-                {
-                    "name": "outcome_text",
-                    "type": "string"
-                },
-                {
-                    "name": "distribution_status",
-                    "type": "uint8"
-                }
-            ]
-        },
-        {
-            "name": "event_registration",
-            "base": "",
-            "fields": [
-                {
-                    "name": "event_id",
-                    "type": "uint64"
-                },
-                {
-                    "name": "event_type",
-                    "type": "uint8"
-                },
-                {
-                    "name": "event_text",
-                    "type": "string"
-                },
-                {
-                    "name": "event_closes_at",
-                    "type": "string"
                 },
                 {
                     "name": "event_status",
                     "type": "uint8"
+                },
+                {
+                    "name": "outcome_option_id",
+                    "type": "uint32"
+                },
+                {
+                    "name": "distribution_end_time",
+                    "type": "uint64"
                 }
             ]
         },
         {
-            "name": "option_registration",
+            "name": "distribution_user_selection",
             "base": "",
             "fields": [
                 {
-                    "name": "option_id",
-                    "type": "uint64"
+                    "name": "selection_id",
+                    "type": "uint128"
                 },
                 {
-                    "name": "option_type",
-                    "type": "uint64"
+                    "name": "user",
+                    "type": "name"
                 },
                 {
                     "name": "event_id",
-                    "type": "uint64"
+                    "type": "uint32"
                 },
                 {
-                    "name": "option_text",
-                    "type": "uint64"
+                    "name": "option_id",
+                    "type": "uint32"
                 }
             ]
         },
         {
-            "name": "regevent",
+            "name": "fantasy_meta_data",
             "base": "",
             "fields": [
                 {
-                    "name": "event_type",
+                    "name": "fantasy_event_id",
+                    "type": "uint32"
+                },
+                {
+                    "name": "total_cost_limit",
+                    "type": "uint16"
+                },
+                {
+                    "name": "max_players",
                     "type": "uint8"
                 },
                 {
-                    "name": "event_text",
-                    "type": "string"
+                    "name": "max_players_per_team",
+                    "type": "uint8"
                 },
                 {
-                    "name": "event_closes_at",
-                    "type": "string"
+                    "name": "max_bat",
+                    "type": "uint8"
+                },
+                {
+                    "name": "max_bowl",
+                    "type": "uint8"
+                },
+                {
+                    "name": "max_wk",
+                    "type": "uint8"
+                },
+                {
+                    "name": "max_ar",
+                    "type": "uint8"
+                },
+                {
+                    "name": "max_participants",
+                    "type": "uint32"
+                },
+                {
+                    "name": "base_player_data",
+                    "type": "player[]"
+                },
+                {
+                    "name": "fantasy_event_status",
+                    "type": "uint8"
+                }
+            ]
+        },
+        {
+            "name": "fantasy_user_selection",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user_selection_id",
+                    "type": "uint128"
+                },
+                {
+                    "name": "fantasy_event_id",
+                    "type": "uint32"
+                },
+                {
+                    "name": "user",
+                    "type": "name"
+                },
+                {
+                    "name": "weight",
+                    "type": "uint16"
+                },
+                {
+                    "name": "selected_players",
+                    "type": "uint32[]"
+                },
+                {
+                    "name": "user_score",
+                    "type": "uint16"
+                }
+            ]
+        },
+        {
+            "name": "initiateuser",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "kycuser",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "openvoting",
+            "base": "",
+            "fields": [
+                {
+                    "name": "event_id",
+                    "type": "uint32"
+                }
+            ]
+        },
+        {
+            "name": "player",
+            "base": "",
+            "fields": [
+                {
+                    "name": "player_id",
+                    "type": "uint32"
+                },
+                {
+                    "name": "team_id",
+                    "type": "uint16"
+                },
+                {
+                    "name": "cost",
+                    "type": "uint8"
+                },
+                {
+                    "name": "player_type_id",
+                    "type": "uint8"
                 }
             ]
         },
@@ -126,29 +236,15 @@
                 {
                     "name": "user",
                     "type": "name"
+                },
+                {
+                    "name": "user_status",
+                    "type": "uint8"
                 }
             ]
         },
         {
-            "name": "regoption",
-            "base": "",
-            "fields": [
-                {
-                    "name": "option_type",
-                    "type": "uint64"
-                },
-                {
-                    "name": "event_id",
-                    "type": "uint64"
-                },
-                {
-                    "name": "option_text",
-                    "type": "uint64"
-                }
-            ]
-        },
-        {
-            "name": "selection",
+            "name": "useroption",
             "base": "",
             "fields": [
                 {
@@ -156,90 +252,78 @@
                     "type": "name"
                 },
                 {
-                    "name": "option_id",
-                    "type": "uint32"
-                },
-                {
                     "name": "event_id",
                     "type": "uint32"
-                }
-            ]
-        },
-        {
-            "name": "user_selection",
-            "base": "",
-            "fields": [
-                {
-                    "name": "id",
-                    "type": "uint64"
-                },
-                {
-                    "name": "user",
-                    "type": "name"
-                },
-                {
-                    "name": "event_id",
-                    "type": "uint64"
                 },
                 {
                     "name": "option_id",
-                    "type": "uint64"
+                    "type": "uint32"
                 }
             ]
         }
     ],
     "actions": [
         {
-            "name": "adduser",
-            "type": "adduser",
+            "name": "adddistevent",
+            "type": "adddistevent",
             "ricardian_contract": ""
         },
         {
-            "name": "closeevent",
-            "type": "closeevent",
+            "name": "addoutcome",
+            "type": "addoutcome",
             "ricardian_contract": ""
         },
         {
-            "name": "regevent",
-            "type": "regevent",
+            "name": "blockuser",
+            "type": "blockuser",
             "ricardian_contract": ""
         },
         {
-            "name": "regoption",
-            "type": "regoption",
+            "name": "initiateuser",
+            "type": "initiateuser",
             "ricardian_contract": ""
         },
         {
-            "name": "selection",
-            "type": "selection",
+            "name": "kycuser",
+            "type": "kycuser",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "openvoting",
+            "type": "openvoting",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "useroption",
+            "type": "useroption",
             "ricardian_contract": ""
         }
     ],
     "tables": [
         {
-            "name": "options",
-            "type": "option_registration",
+            "name": "disteventreg",
+            "type": "distribution_event",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
         },
         {
-            "name": "outcome",
-            "type": "event_outcome",
+            "name": "distusersel",
+            "type": "distribution_user_selection",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
         },
         {
-            "name": "regevents",
-            "type": "event_registration",
+            "name": "fantasymd",
+            "type": "fantasy_meta_data",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
         },
         {
-            "name": "selection",
-            "type": "user_selection",
+            "name": "fantasyus",
+            "type": "fantasy_user_selection",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
