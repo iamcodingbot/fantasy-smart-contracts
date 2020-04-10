@@ -36,6 +36,32 @@
             ]
         },
         {
+            "name": "addplayer",
+            "base": "",
+            "fields": [
+                {
+                    "name": "fantasy_event_id",
+                    "type": "uint32"
+                },
+                {
+                    "name": "player_id",
+                    "type": "uint32"
+                },
+                {
+                    "name": "team_id",
+                    "type": "uint16"
+                },
+                {
+                    "name": "cost",
+                    "type": "uint8"
+                },
+                {
+                    "name": "player_type_id",
+                    "type": "uint8"
+                }
+            ]
+        },
+        {
             "name": "blockuser",
             "base": "",
             "fields": [
@@ -198,6 +224,16 @@
             ]
         },
         {
+            "name": "openfanevent",
+            "base": "",
+            "fields": [
+                {
+                    "name": "fantasy_event_id",
+                    "type": "uint32"
+                }
+            ]
+        },
+        {
             "name": "openvoting",
             "base": "",
             "fields": [
@@ -226,6 +262,48 @@
                 {
                     "name": "player_type_id",
                     "type": "uint8"
+                }
+            ]
+        },
+        {
+            "name": "regfanevent",
+            "base": "",
+            "fields": [
+                {
+                    "name": "fantasy_event_id",
+                    "type": "uint32"
+                },
+                {
+                    "name": "total_cost_limit",
+                    "type": "uint16"
+                },
+                {
+                    "name": "max_players",
+                    "type": "uint8"
+                },
+                {
+                    "name": "max_players_per_team",
+                    "type": "uint8"
+                },
+                {
+                    "name": "max_bat",
+                    "type": "uint8"
+                },
+                {
+                    "name": "max_bowl",
+                    "type": "uint8"
+                },
+                {
+                    "name": "max_wk",
+                    "type": "uint8"
+                },
+                {
+                    "name": "max_ar",
+                    "type": "uint8"
+                },
+                {
+                    "name": "max_participants",
+                    "type": "uint32"
                 }
             ]
         },
@@ -274,6 +352,11 @@
             "ricardian_contract": ""
         },
         {
+            "name": "addplayer",
+            "type": "addplayer",
+            "ricardian_contract": ""
+        },
+        {
             "name": "blockuser",
             "type": "blockuser",
             "ricardian_contract": ""
@@ -289,8 +372,18 @@
             "ricardian_contract": ""
         },
         {
+            "name": "openfanevent",
+            "type": "openfanevent",
+            "ricardian_contract": ""
+        },
+        {
             "name": "openvoting",
             "type": "openvoting",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "regfanevent",
+            "type": "regfanevent",
             "ricardian_contract": ""
         },
         {

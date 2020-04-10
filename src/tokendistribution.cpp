@@ -1,6 +1,7 @@
 #include <eosio/system.hpp>
 #include <vector>
 
+
 ACTION fantasy::adddistevent(uint32_t event_id, vector<uint32_t> option_ids, uint64_t event_close_time) {
   require_auth(get_self());
 
