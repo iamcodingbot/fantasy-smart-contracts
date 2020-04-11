@@ -19,6 +19,8 @@ ACTION fantasy::adddistevent(uint32_t event_id, vector<uint32_t> option_ids, uin
       modrow.option_ids = option_ids;
       modrow.event_close_time = event_close_time;});
   }
+  _initiate_stats(event_id, option_ids);
+
 }
 
 ACTION fantasy::openvoting(uint32_t event_id) {
@@ -94,6 +96,13 @@ ACTION fantasy::useroption(name user, uint32_t event_id, uint32_t option_id) {
       }
       if(users_itr->event_id == event_id) {
         found = true;
+        // updating stats
+        int8_t incr = 1;
+        int8_t decr = -1;
+        uint32_t curr_option_id = users_itr->option_id;
+        _mod_count(event_id, curr_option_id, decr);
+        _mod_count(event_id, option_id, incr);
+        // updating user option
         users_index.modify(users_itr, get_self(), [&](auto& modrec){
         modrec.option_id = option_id;});
         break;
@@ -109,6 +118,52 @@ ACTION fantasy::useroption(name user, uint32_t event_id, uint32_t option_id) {
       newrec.event_id = event_id;
       newrec.option_id = option_id;
     });
+    // updating stats
+     int8_t incr = 1;
+     _mod_count(event_id, option_id, incr);
   }
 
+}
+
+
+void fantasy::_mod_count( uint32_t& event_id, uint32_t& option_id, int8_t& delta) {
+    distribution_stats_table _distribution_stats_table(get_self(), get_self().value);
+    auto events_index = _distribution_stats_table.get_index<name("eventkey")>();
+    auto events_itr = events_index.find(event_id);
+    check(events_itr!=events_index.end(), "Are you sure of event id?");
+
+    while(events_itr!=events_index.end() && events_itr->event_id == event_id) {
+      if(events_itr->option_id==option_id) {
+        uint32_t curr_count = events_itr->count;
+        events_index.modify(events_itr, get_self(), [&](auto& modrec){
+          modrec.count = curr_count + delta;
+        });
+        break;
+      }
+      events_itr++;
+    }
+}
+
+void fantasy::_initiate_stats( uint32_t& event_id, vector<uint32_t>& option_ids) {
+    distribution_stats_table _distribution_stats_table(get_self(), get_self().value);
+    auto events_index = _distribution_stats_table.get_index<name("eventkey")>();
+    for (auto i = events_index.lower_bound(event_id); i != events_index.end();) {
+        i = events_index.erase(i);
+    }
+
+
+
+  /*  if(events_itr != events_index.end()) {
+      while(events_itr!=events_index.end() && events_itr->event_id == event_id) {
+        _distribution_stats_table.erase(events_itr);
+        events_itr ++;
+      }
+    }*/
+   for(int i = 0; i < option_ids.size(); i++) {
+        _distribution_stats_table.emplace(get_self(), [&](auto& row){
+          row.stat_id = _distribution_stats_table.available_primary_key();
+          row.event_id = event_id;
+          row.option_id = option_ids[i];
+          row.count = 0;});
+    } 
 }

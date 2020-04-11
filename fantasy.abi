@@ -102,6 +102,28 @@
             ]
         },
         {
+            "name": "distribution_stats",
+            "base": "",
+            "fields": [
+                {
+                    "name": "stat_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "event_id",
+                    "type": "uint64"
+                },
+                {
+                    "name": "option_id",
+                    "type": "uint32"
+                },
+                {
+                    "name": "count",
+                    "type": "uint32"
+                }
+            ]
+        },
+        {
             "name": "distribution_user_selection",
             "base": "",
             "fields": [
@@ -120,6 +142,28 @@
                 {
                     "name": "option_id",
                     "type": "uint32"
+                }
+            ]
+        },
+        {
+            "name": "fanselection",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                },
+                {
+                    "name": "fantasy_event_id",
+                    "type": "uint32"
+                },
+                {
+                    "name": "selected_players",
+                    "type": "uint32[]"
+                },
+                {
+                    "name": "weight",
+                    "type": "uint16"
                 }
             ]
         },
@@ -362,6 +406,11 @@
             "ricardian_contract": ""
         },
         {
+            "name": "fanselection",
+            "type": "fanselection",
+            "ricardian_contract": ""
+        },
+        {
             "name": "initiateuser",
             "type": "initiateuser",
             "ricardian_contract": ""
@@ -396,6 +445,13 @@
         {
             "name": "disteventreg",
             "type": "distribution_event",
+            "index_type": "i64",
+            "key_names": [],
+            "key_types": []
+        },
+        {
+            "name": "diststats",
+            "type": "distribution_stats",
             "index_type": "i64",
             "key_names": [],
             "key_types": []

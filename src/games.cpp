@@ -1,8 +1,6 @@
 #include <eosio/system.hpp>
 #include <vector>
 
-
-
 ACTION fantasy::regfanevent(uint32_t fantasy_event_id, uint16_t total_cost_limit, 
         uint8_t max_players, uint8_t max_players_per_team, 
         uint8_t max_bat, uint8_t max_bowl, uint8_t max_wk, 
@@ -82,7 +80,7 @@ ACTION fantasy::openfanevent(uint32_t fantasy_event_id) {
 }
 
 ACTION fantasy::fanselection(name user, uint32_t fantasy_event_id,
-       vector<uint32_t> selected_players, uint16_t weight, asset tokens) {
+       vector<uint32_t> selected_players, uint16_t weight) {
   require_auth(get_self());
   // valid user, not blacklisted
   // valid  fantasy_event_id

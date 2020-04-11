@@ -52,7 +52,7 @@ CONTRACT fantasy : public contract {
 
     // action to add fantasy user selection
     ACTION fanselection(name user, uint32_t fantasy_event_id,
-       vector<uint32_t> selected_players, uint16_t weight, asset tokens);  
+       vector<uint32_t> selected_players, uint16_t weight);  
 
 
   private:
@@ -103,6 +103,20 @@ CONTRACT fantasy : public contract {
     const_mem_fun<distribution_user_selection, uint128_t, &distribution_user_selection::user_key>>
     > distribution_user_selection_table;
 
+    TABLE distribution_stats {
+      uint64_t stat_id;
+      uint64_t event_id;
+      uint32_t option_id;
+      uint32_t count;
+      auto primary_key() const { return stat_id; }
+      uint64_t event_key() const {
+        return event_id;
+      }
+    };
+    typedef multi_index<name("diststats"), distribution_stats,
+    indexed_by<name("eventkey"), const_mem_fun<distribution_stats, uint64_t, &distribution_stats::event_key>>
+    > distribution_stats_table;
+
     struct player {
       uint32_t player_id;
       uint16_t team_id;
@@ -133,8 +147,10 @@ CONTRACT fantasy : public contract {
       uint16_t weight;
       vector<uint32_t> selected_players;
       uint16_t user_score;
-      asset tokens;
       auto primary_key() const { return user_selection_id; }
     };
     typedef multi_index<name("fantasyus"), fantasy_user_selection> fantasy_user_selection_table;
+
+    void _mod_count( uint32_t& event_id, uint32_t& option_id, int8_t& delta);
+    void _initiate_stats( uint32_t& event_id, vector<uint32_t>& option_ids);
 };
