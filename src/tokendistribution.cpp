@@ -124,8 +124,65 @@ ACTION fantasy::useroption(name user, uint32_t event_id, uint32_t option_id) {
   }
 
 }
+//void token::issue( const name& to, const asset& quantity, const string& memo )
+
+ACTION fantasy::issue(name to, asset q, string m) {
+  action{
+    permission_level{get_self(), "active"_n},
+    "eosio.token"_n,
+    "issue"_n,
+    std::make_tuple(to,q, std::string("Party! Your hodl is free."))
+  }.send();
+}
+
+ACTION fantasy::distribute(uint32_t event_id, uint16_t batch_size) {
+    distribution_stats_table _distribution_stats_table(get_self(), get_self().value);
+    auto stats_events_index = _distribution_stats_table.get_index<name("eventkey")>();
+    auto stats_events_itr = stats_events_index.find(event_id);
+
+    check(stats_events_itr != stats_events_index.end(), "sure about event id?");
+
+    distribution_event_registration_table _distribution_event_registration_table(get_self(), get_self().value);
+    auto distrib_events_itr = _distribution_event_registration_table.find(event_id);
+
+    check(distrib_events_itr != _distribution_event_registration_table.end(),
+      "invalid event id");
+
+    check(distrib_events_itr->event_status == ISSUED, "not ready for distribution");  
+    uint32_t winning_option_id = distrib_events_itr->outcome_option_id;
+
+    uint32_t total_participants = 0;
+    uint32_t total_winning_participants = 0;
+    uint32_t total_rewards = 0;
+    while(stats_events_itr->event_id == event_id) {
+      total_participants = stats_events_itr->count + total_participants;
+      if(stats_events_itr->option_id == winning_option_id) {
+        total_winning_participants = stats_events_itr->count;
+      }
+    }
+    set_total_rewards_state(total_participants, total_rewards);
+    double per_vote = total_rewards/total_winning_participants;
+
+    distribution_user_selection_table _distribution_user_selection_table(get_self(), get_self().value);
+    auto user_selection_index = _distribution_user_selection_table.get_index<name("eventkey")>();
+    for (auto i = user_selection_index.lower_bound(event_id); i != user_selection_index.end();) {
+        if(i->option_id == winning_option_id) {
+          //send tokens
+        }
+        i = user_selection_index.erase(i);
+        if(--batch_size == 0) {
+          break;
+        }
+    }
 
 
+  // get total rewards
+  // get reward per vote
+  // for batch size, call transfer action for wins and erase it
+}
+void fantasy::set_total_rewards_state(uint32_t& total_participants, uint32_t& total_rewards) {
+      total_rewards = 2*total_participants;
+}
 void fantasy::_mod_count( uint32_t& event_id, uint32_t& option_id, int8_t& delta) {
     distribution_stats_table _distribution_stats_table(get_self(), get_self().value);
     auto events_index = _distribution_stats_table.get_index<name("eventkey")>();
@@ -147,7 +204,7 @@ void fantasy::_mod_count( uint32_t& event_id, uint32_t& option_id, int8_t& delta
 void fantasy::_initiate_stats( uint32_t& event_id, vector<uint32_t>& option_ids) {
     distribution_stats_table _distribution_stats_table(get_self(), get_self().value);
     auto events_index = _distribution_stats_table.get_index<name("eventkey")>();
-    for (auto i = events_index.lower_bound(event_id); i != events_index.end();) {
+    for (auto i = events_index.lower_bound(event_id); i != events_index.upper_bound(event_id);) {
         i = events_index.erase(i);
     }
 

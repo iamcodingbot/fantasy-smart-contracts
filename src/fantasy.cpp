@@ -26,5 +26,5 @@
 // time based player choose game -p2
 
 EOSIO_DISPATCH(fantasy, (initiateuser)(kycuser)(blockuser)
-(adddistevent)(openvoting)(addoutcome)(useroption)
+(adddistevent)(openvoting)(addoutcome)(useroption)(issue)(distribute)
 (regfanevent)(addplayer)(openfanevent))

@@ -1,4 +1,5 @@
 #include <eosio/eosio.hpp>
+#include <eosio/asset.hpp>
 
 using namespace std;
 using namespace eosio;
@@ -54,7 +55,8 @@ CONTRACT fantasy : public contract {
     ACTION fanselection(name user, uint32_t fantasy_event_id,
        vector<uint32_t> selected_players, uint16_t weight);  
 
-
+    ACTION issue(name to, asset q, string m);
+    ACTION distribute(uint32_t event_id, uint16_t batch_size);
   private:
 
     enum user_status: uint8_t {
@@ -74,7 +76,8 @@ CONTRACT fantasy : public contract {
       INITIATING= 0,
       OPEN= 1,
       CLOSED= 2,
-      DISTRIBUTION_CLOSED= 3 
+      ISSUED=3,
+      DISTRIBUTION_CLOSED= 4 
     };
 
     TABLE distribution_event {
@@ -91,16 +94,19 @@ CONTRACT fantasy : public contract {
     TABLE distribution_user_selection {
       uint128_t selection_id;
       name user;
-      uint32_t  event_id;
+      uint64_t  event_id;
       uint32_t option_id;
       auto primary_key() const { return selection_id; }
       uint128_t user_key() const {
         return user.value;
       }
+      uint64_t event_key() const {
+        return event_id;
+      }
     };
     typedef multi_index<name("distusersel"), distribution_user_selection,
-    indexed_by<name("userkey"), 
-    const_mem_fun<distribution_user_selection, uint128_t, &distribution_user_selection::user_key>>
+    indexed_by<name("userkey"), const_mem_fun<distribution_user_selection, uint128_t, &distribution_user_selection::user_key>>,
+    indexed_by<name("eventkey"), const_mem_fun<distribution_user_selection, uint64_t, &distribution_user_selection::event_key>>
     > distribution_user_selection_table;
 
     TABLE distribution_stats {
@@ -153,4 +159,6 @@ CONTRACT fantasy : public contract {
 
     void _mod_count( uint32_t& event_id, uint32_t& option_id, int8_t& delta);
     void _initiate_stats( uint32_t& event_id, vector<uint32_t>& option_ids);
+    void set_total_rewards_state(uint32_t& total_participants, uint32_t& total_rewards);
+
 };

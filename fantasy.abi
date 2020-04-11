@@ -72,6 +72,20 @@
             ]
         },
         {
+            "name": "distribute",
+            "base": "",
+            "fields": [
+                {
+                    "name": "event_id",
+                    "type": "uint32"
+                },
+                {
+                    "name": "batch_size",
+                    "type": "uint16"
+                }
+            ]
+        },
+        {
             "name": "distribution_event",
             "base": "",
             "fields": [
@@ -137,7 +151,7 @@
                 },
                 {
                     "name": "event_id",
-                    "type": "uint32"
+                    "type": "uint64"
                 },
                 {
                     "name": "option_id",
@@ -254,6 +268,24 @@
                 {
                     "name": "user",
                     "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "issue",
+            "base": "",
+            "fields": [
+                {
+                    "name": "to",
+                    "type": "name"
+                },
+                {
+                    "name": "q",
+                    "type": "asset"
+                },
+                {
+                    "name": "m",
+                    "type": "string"
                 }
             ]
         },
@@ -406,6 +438,11 @@
             "ricardian_contract": ""
         },
         {
+            "name": "distribute",
+            "type": "distribute",
+            "ricardian_contract": ""
+        },
+        {
             "name": "fanselection",
             "type": "fanselection",
             "ricardian_contract": ""
@@ -413,6 +450,11 @@
         {
             "name": "initiateuser",
             "type": "initiateuser",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "issue",
+            "type": "issue",
             "ricardian_contract": ""
         },
         {
