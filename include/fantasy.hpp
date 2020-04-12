@@ -84,7 +84,7 @@ CONTRACT fantasy : public contract {
     };
     typedef multi_index<name("eventmd"), event_metadata> event_metadata_table;
 
-    TABLE event_transactions {
+    TABLE event_tx {
       uint128_t id;
       name user;
       uint64_t  event_id;
@@ -97,10 +97,10 @@ CONTRACT fantasy : public contract {
         return event_id;
       }
     };
-    typedef multi_index<name("eventtx"), event_transactions,
-    indexed_by<name("userkey"), const_mem_fun<event_transactions, uint128_t, &event_transactions::user_key>>,
-    indexed_by<name("eventkey"), const_mem_fun<event_transactions, uint64_t, &event_transactions::event_key>>
-    > event_transactions_table;
+    typedef multi_index<name("eventtx"), event_tx,
+    indexed_by<name("userkey"), const_mem_fun<event_tx, uint128_t, &event_tx::user_key>>,
+    indexed_by<name("eventkey"), const_mem_fun<event_tx, uint64_t, &event_tx::event_key>>
+    > event_tx_table;
 
     TABLE event_stats {
       uint64_t stat_id;
