@@ -1,6 +1,9 @@
 #include <eosio/system.hpp>
 #include <vector>
 
+//TODO refactor constants
+//TODO empty value checks
+//TODO no transfer without kyc
 
 ACTION fantasy::adddistevent(uint32_t event_id, vector<uint32_t> option_ids, uint64_t event_close_time) {
   require_auth(get_self());
@@ -47,9 +50,33 @@ ACTION fantasy::addoutcome(uint32_t event_id, uint32_t winning_option_id) {
   vector<uint32_t>::iterator option_itr = find(valid_option_ids.begin(), valid_option_ids.end(), winning_option_id);;
   check(option_itr != valid_option_ids.end(), "Invalid option");
 
+  distribution_stats_table _distribution_stats_table(get_self(), get_self().value);
+  auto stats_events_index = _distribution_stats_table.get_index<name("eventkey")>();
+  auto stats_events_itr = stats_events_index.find(event_id);
+
+  check(stats_events_itr != stats_events_index.end(), "sure about event id?");
+
+  uint32_t total_participants = 0;
+  uint32_t total_winning_participants = 0;
+  uint32_t total_rewards = 0;
+
+  while(stats_events_itr->event_id == event_id) {
+    total_participants = stats_events_itr->count + total_participants;
+    if(stats_events_itr->option_id == winning_option_id) {
+      total_winning_participants = stats_events_itr->count;
+    }
+    stats_events_itr++;
+  }
+  
+  set_total_rewards_state(total_participants, total_rewards);
+
   _distribution_event_registration_table.modify(event_itr, get_self(), [&](auto& row)
     {row.outcome_option_id = winning_option_id;
+    row.total_participants = total_participants;
+    row.winning_participants = total_winning_participants;
+    row.total_rewards = total_rewards;
     row.event_status = CLOSED;});
+
 }
 
 ACTION fantasy::useroption(name user, uint32_t event_id, uint32_t option_id) {
@@ -124,7 +151,121 @@ ACTION fantasy::useroption(name user, uint32_t event_id, uint32_t option_id) {
   }
 
 }
+// void token::issue( const name& to, const asset& quantity, const string& memo )
+// todo put total rewards as asset
+ACTION fantasy::issue(name to, uint32_t event_id, asset q, string m) {
+  require_auth(get_self());
+  distribution_event_registration_table _distribution_event_registration_table(get_self(), get_self().value);
 
+  auto event_itr = _distribution_event_registration_table.find(event_id);
+
+  check(event_itr != _distribution_event_registration_table.end(), "invalid event");
+
+  uint32_t amount = event_itr->total_rewards;
+
+  eosio::asset quantity(amount, eosio::symbol("FANTASY",4));
+
+  action{
+    permission_level{get_self(), "active"_n},
+    "eosio.token"_n,
+    "issue"_n,
+    std::make_tuple(to, quantity , std::string("issued"))
+  }.send();
+    
+  _distribution_event_registration_table.modify(event_itr, get_self(), [&](auto& row)
+      {row.event_status = ISSUED;});
+
+}
+
+ACTION fantasy::distribute(uint32_t event_id, uint16_t batch_size) {
+    require_auth(get_self());
+    distribution_event_registration_table _distribution_event_registration_table(get_self(), get_self().value);
+    auto distrib_events_itr = _distribution_event_registration_table.find(event_id);
+
+    check(distrib_events_itr != _distribution_event_registration_table.end(),
+      "invalid event id");
+
+    check(distrib_events_itr->event_status == ISSUED, "not ready for distribution");  
+    
+    uint32_t winning_option_id = distrib_events_itr->outcome_option_id;
+    uint32_t total_participants = distrib_events_itr->total_participants;
+    uint32_t total_winning_participants = distrib_events_itr->winning_participants;
+    uint32_t total_rewards = distrib_events_itr->total_rewards;
+    uint32_t per_vote = (.7 * total_rewards)/total_winning_participants;
+
+    distribution_user_selection_table _distribution_user_selection_table(get_self(), get_self().value);
+    auto user_selection_index = _distribution_user_selection_table.get_index<name("eventkey")>();
+    check(user_selection_index.lower_bound(event_id) != user_selection_index.end(), "Distribution ended");
+    for (auto i = user_selection_index.lower_bound(event_id); i != user_selection_index.upper_bound(event_id);) {
+    eosio::asset x(per_vote, eosio::symbol("FANTASY",4));
+        if(i->option_id == winning_option_id) {
+            action{
+              permission_level{get_self(), "active"_n},
+              "eosio.token"_n,
+              "transfer"_n,
+              std::make_tuple(name("fantasy"), i->user,x, std::string("u r a winner"))
+            }.send();
+        }
+        i = user_selection_index.erase(i);
+        if(--batch_size == 0) {
+          break;
+        }
+    }
+    if(user_selection_index.lower_bound(event_id) == user_selection_index.end()) {
+      _distribution_event_registration_table.modify(distrib_events_itr, get_self(), [&](auto& row)
+        {row.event_status = DISTRIBUTION_CLOSED;});
+    }
+
+}
+
+ACTION fantasy::xfertodev(uint32_t event_id, name dev_account) {
+    require_auth(get_self());
+    distribution_event_registration_table _distribution_event_registration_table(get_self(), get_self().value);
+    auto distrib_events_itr = _distribution_event_registration_table.find(event_id);
+
+    check(distrib_events_itr != _distribution_event_registration_table.end(),
+      "invalid event id");
+
+    check(distrib_events_itr->event_status == DISTRIBUTION_CLOSED, "not ready for distribution");  
+    uint32_t total_rewards = distrib_events_itr->total_rewards;
+    uint32_t dev_rewards = .3 * total_rewards;
+    eosio::asset quantity(dev_rewards, eosio::symbol("FANTASY",4));
+    action{
+        permission_level{get_self(), "active"_n},
+        "eosio.token"_n,
+        "transfer"_n,
+        std::make_tuple(name("fantasy"), dev_account, quantity, std::string("Dev rewards"))
+    }.send();
+    _distribution_event_registration_table.modify(distrib_events_itr, get_self(), [&](auto& row)
+        {row.event_status = DEV_FUNDS_DISTRIBUTED;});
+}
+
+ACTION fantasy::cleanupdist(uint32_t event_id) {
+    require_auth(get_self());
+
+    distribution_event_registration_table _distribution_event_registration_table(get_self(), get_self().value);
+    auto distrib_events_itr = _distribution_event_registration_table.find(event_id);
+
+    check(distrib_events_itr != _distribution_event_registration_table.end(),
+      "invalid event id");
+
+    check(distrib_events_itr->event_status == DEV_FUNDS_DISTRIBUTED, "not ready for cleanup");  
+
+    // clean up stats
+    distribution_stats_table _distribution_stats_table(get_self(), get_self().value);
+    auto events_index = _distribution_stats_table.get_index<name("eventkey")>();
+    for (auto i = events_index.lower_bound(event_id); i != events_index.upper_bound(event_id);) {
+        i = events_index.erase(i);
+    }
+
+    // clean up metadata
+    distrib_events_itr = _distribution_event_registration_table.erase(distrib_events_itr);
+
+}
+
+void fantasy::set_total_rewards_state(uint32_t& total_participants, uint32_t& total_rewards) {
+      total_rewards = 20000*total_participants;
+}
 
 void fantasy::_mod_count( uint32_t& event_id, uint32_t& option_id, int8_t& delta) {
     distribution_stats_table _distribution_stats_table(get_self(), get_self().value);
@@ -144,21 +285,14 @@ void fantasy::_mod_count( uint32_t& event_id, uint32_t& option_id, int8_t& delta
     }
 }
 
+
 void fantasy::_initiate_stats( uint32_t& event_id, vector<uint32_t>& option_ids) {
     distribution_stats_table _distribution_stats_table(get_self(), get_self().value);
     auto events_index = _distribution_stats_table.get_index<name("eventkey")>();
-    for (auto i = events_index.lower_bound(event_id); i != events_index.end();) {
+    for (auto i = events_index.lower_bound(event_id); i != events_index.upper_bound(event_id);) {
         i = events_index.erase(i);
     }
 
-
-
-  /*  if(events_itr != events_index.end()) {
-      while(events_itr!=events_index.end() && events_itr->event_id == event_id) {
-        _distribution_stats_table.erase(events_itr);
-        events_itr ++;
-      }
-    }*/
    for(int i = 0; i < option_ids.size(); i++) {
         _distribution_stats_table.emplace(get_self(), [&](auto& row){
           row.stat_id = _distribution_stats_table.available_primary_key();

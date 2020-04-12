@@ -72,6 +72,30 @@
             ]
         },
         {
+            "name": "cleanupdist",
+            "base": "",
+            "fields": [
+                {
+                    "name": "event_id",
+                    "type": "uint32"
+                }
+            ]
+        },
+        {
+            "name": "distribute",
+            "base": "",
+            "fields": [
+                {
+                    "name": "event_id",
+                    "type": "uint32"
+                },
+                {
+                    "name": "batch_size",
+                    "type": "uint16"
+                }
+            ]
+        },
+        {
             "name": "distribution_event",
             "base": "",
             "fields": [
@@ -98,6 +122,18 @@
                 {
                     "name": "distribution_end_time",
                     "type": "uint64"
+                },
+                {
+                    "name": "total_participants",
+                    "type": "uint32"
+                },
+                {
+                    "name": "winning_participants",
+                    "type": "uint32"
+                },
+                {
+                    "name": "total_rewards",
+                    "type": "uint32"
                 }
             ]
         },
@@ -137,7 +173,7 @@
                 },
                 {
                     "name": "event_id",
-                    "type": "uint32"
+                    "type": "uint64"
                 },
                 {
                     "name": "option_id",
@@ -254,6 +290,28 @@
                 {
                     "name": "user",
                     "type": "name"
+                }
+            ]
+        },
+        {
+            "name": "issue",
+            "base": "",
+            "fields": [
+                {
+                    "name": "to",
+                    "type": "name"
+                },
+                {
+                    "name": "event_id",
+                    "type": "uint32"
+                },
+                {
+                    "name": "q",
+                    "type": "asset"
+                },
+                {
+                    "name": "m",
+                    "type": "string"
                 }
             ]
         },
@@ -382,6 +440,20 @@
                     "type": "uint32"
                 }
             ]
+        },
+        {
+            "name": "xfertodev",
+            "base": "",
+            "fields": [
+                {
+                    "name": "event_id",
+                    "type": "uint32"
+                },
+                {
+                    "name": "dev_account",
+                    "type": "name"
+                }
+            ]
         }
     ],
     "actions": [
@@ -406,6 +478,16 @@
             "ricardian_contract": ""
         },
         {
+            "name": "cleanupdist",
+            "type": "cleanupdist",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "distribute",
+            "type": "distribute",
+            "ricardian_contract": ""
+        },
+        {
             "name": "fanselection",
             "type": "fanselection",
             "ricardian_contract": ""
@@ -413,6 +495,11 @@
         {
             "name": "initiateuser",
             "type": "initiateuser",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "issue",
+            "type": "issue",
             "ricardian_contract": ""
         },
         {
@@ -438,6 +525,11 @@
         {
             "name": "useroption",
             "type": "useroption",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "xfertodev",
+            "type": "xfertodev",
             "ricardian_contract": ""
         }
     ],
