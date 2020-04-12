@@ -55,7 +55,7 @@ CONTRACT fantasy : public contract {
     ACTION fanselection(name user, uint32_t fantasy_event_id,
        vector<uint32_t> selected_players, uint16_t weight);  
 
-    ACTION issue(name to, asset q, string m);
+    ACTION issue(uint32_t event_id, asset q, string m);
     ACTION distribute(uint32_t event_id, uint16_t batch_size);
   private:
 
@@ -87,6 +87,9 @@ CONTRACT fantasy : public contract {
       uint8_t event_status = INITIATING;
       uint32_t outcome_option_id;
       uint64_t distribution_end_time;
+      uint32_t total_participants;
+      uint32_t winning_participants;
+      uint32_t total_rewards;
       auto primary_key() const { return event_id; }
     };
     typedef multi_index<name("disteventreg"), distribution_event> distribution_event_registration_table;
