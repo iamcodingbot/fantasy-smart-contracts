@@ -150,7 +150,7 @@ ACTION fantasy::useroption(name user, uint32_t event_id, uint32_t option_id) {
 }
 //void token::issue( const name& to, const asset& quantity, const string& memo )
 
-ACTION fantasy::issue(uint32_t event_id, asset q, string m) {
+ACTION fantasy::issue(name to, uint32_t event_id, asset q, string m) {
   distribution_event_registration_table _distribution_event_registration_table(get_self(), get_self().value);
 
   auto event_itr = _distribution_event_registration_table.find(event_id);
@@ -161,7 +161,7 @@ ACTION fantasy::issue(uint32_t event_id, asset q, string m) {
     permission_level{get_self(), "active"_n},
     "eosio.token"_n,
     "issue"_n,
-    std::make_tuple(get_self() , q, std::string("issued"))
+    std::make_tuple(to, q, std::string("issued"))
   }.send();
     
   _distribution_event_registration_table.modify(event_itr, get_self(), [&](auto& row)

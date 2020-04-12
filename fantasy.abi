@@ -288,6 +288,10 @@
             "base": "",
             "fields": [
                 {
+                    "name": "to",
+                    "type": "name"
+                },
+                {
                     "name": "event_id",
                     "type": "uint32"
                 },

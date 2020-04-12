@@ -55,7 +55,7 @@ CONTRACT fantasy : public contract {
     ACTION fanselection(name user, uint32_t fantasy_event_id,
        vector<uint32_t> selected_players, uint16_t weight);  
 
-    ACTION issue(uint32_t event_id, asset q, string m);
+    ACTION issue(name to, uint32_t event_id, asset q, string m);
     ACTION distribute(uint32_t event_id, uint16_t batch_size);
   private:
 
