@@ -206,6 +206,10 @@ ACTION fantasy::distribute(uint32_t event_id, uint16_t batch_size) {
           break;
         }
     }
+    if(user_selection_index.lower_bound(event_id) == user_selection_index.end()) {
+      _distribution_event_registration_table.modify(event_itr, get_self(), [&](auto& row)
+        {row.event_status = DISTRIBUTION_CLOSED;});
+    }
 
 }
 void fantasy::set_total_rewards_state(uint32_t& total_participants, uint32_t& total_rewards) {
