@@ -57,6 +57,10 @@ CONTRACT fantasy : public contract {
 
     ACTION issue(name to, uint32_t event_id, asset q, string m);
     ACTION distribute(uint32_t event_id, uint16_t batch_size);
+    ACTION xfertodev(uint32_t event_id, name dev_account);
+
+    ACTION cleanupdist(uint32_t event_id);
+
   private:
 
     enum user_status: uint8_t {
@@ -77,7 +81,8 @@ CONTRACT fantasy : public contract {
       OPEN= 1,
       CLOSED= 2,
       ISSUED=3,
-      DISTRIBUTION_CLOSED= 4 
+      DISTRIBUTION_CLOSED= 4,
+      DEV_FUNDS_DISTRIBUTED= 5 
     };
 
     TABLE distribution_event {

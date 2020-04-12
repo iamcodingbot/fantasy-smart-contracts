@@ -1,6 +1,9 @@
 #include <eosio/system.hpp>
 #include <vector>
 
+//TODO refactor constants
+//TODO empty value checks
+//TODO no transfer without kyc
 
 ACTION fantasy::adddistevent(uint32_t event_id, vector<uint32_t> option_ids, uint64_t event_close_time) {
   require_auth(get_self());
@@ -151,6 +154,7 @@ ACTION fantasy::useroption(name user, uint32_t event_id, uint32_t option_id) {
 // void token::issue( const name& to, const asset& quantity, const string& memo )
 // todo put total rewards as asset
 ACTION fantasy::issue(name to, uint32_t event_id, asset q, string m) {
+  require_auth(get_self());
   distribution_event_registration_table _distribution_event_registration_table(get_self(), get_self().value);
 
   auto event_itr = _distribution_event_registration_table.find(event_id);
@@ -174,6 +178,7 @@ ACTION fantasy::issue(name to, uint32_t event_id, asset q, string m) {
 }
 
 ACTION fantasy::distribute(uint32_t event_id, uint16_t batch_size) {
+    require_auth(get_self());
     distribution_event_registration_table _distribution_event_registration_table(get_self(), get_self().value);
     auto distrib_events_itr = _distribution_event_registration_table.find(event_id);
 
@@ -181,12 +186,12 @@ ACTION fantasy::distribute(uint32_t event_id, uint16_t batch_size) {
       "invalid event id");
 
     check(distrib_events_itr->event_status == ISSUED, "not ready for distribution");  
+    
     uint32_t winning_option_id = distrib_events_itr->outcome_option_id;
-
     uint32_t total_participants = distrib_events_itr->total_participants;
     uint32_t total_winning_participants = distrib_events_itr->winning_participants;
     uint32_t total_rewards = distrib_events_itr->total_rewards;
-    uint32_t per_vote = total_rewards/total_winning_participants;
+    uint32_t per_vote = (.7 * total_rewards)/total_winning_participants;
 
     distribution_user_selection_table _distribution_user_selection_table(get_self(), get_self().value);
     auto user_selection_index = _distribution_user_selection_table.get_index<name("eventkey")>();
@@ -198,7 +203,7 @@ ACTION fantasy::distribute(uint32_t event_id, uint16_t batch_size) {
               permission_level{get_self(), "active"_n},
               "eosio.token"_n,
               "transfer"_n,
-              std::make_tuple(name("fantasy"), i->user,x, std::string("Party! Your hodl is free."))
+              std::make_tuple(name("fantasy"), i->user,x, std::string("u r a winner"))
             }.send();
         }
         i = user_selection_index.erase(i);
@@ -207,14 +212,61 @@ ACTION fantasy::distribute(uint32_t event_id, uint16_t batch_size) {
         }
     }
     if(user_selection_index.lower_bound(event_id) == user_selection_index.end()) {
-      _distribution_event_registration_table.modify(event_itr, get_self(), [&](auto& row)
+      _distribution_event_registration_table.modify(distrib_events_itr, get_self(), [&](auto& row)
         {row.event_status = DISTRIBUTION_CLOSED;});
     }
 
 }
+
+ACTION fantasy::xfertodev(uint32_t event_id, name dev_account) {
+    require_auth(get_self());
+    distribution_event_registration_table _distribution_event_registration_table(get_self(), get_self().value);
+    auto distrib_events_itr = _distribution_event_registration_table.find(event_id);
+
+    check(distrib_events_itr != _distribution_event_registration_table.end(),
+      "invalid event id");
+
+    check(distrib_events_itr->event_status == DISTRIBUTION_CLOSED, "not ready for distribution");  
+    uint32_t total_rewards = distrib_events_itr->total_rewards;
+    uint32_t dev_rewards = .3 * total_rewards;
+    eosio::asset quantity(dev_rewards, eosio::symbol("FANTASY",4));
+    action{
+        permission_level{get_self(), "active"_n},
+        "eosio.token"_n,
+        "transfer"_n,
+        std::make_tuple(name("fantasy"), dev_account, quantity, std::string("Dev rewards"))
+    }.send();
+    _distribution_event_registration_table.modify(distrib_events_itr, get_self(), [&](auto& row)
+        {row.event_status = DEV_FUNDS_DISTRIBUTED;});
+}
+
+ACTION fantasy::cleanupdist(uint32_t event_id) {
+    require_auth(get_self());
+
+    distribution_event_registration_table _distribution_event_registration_table(get_self(), get_self().value);
+    auto distrib_events_itr = _distribution_event_registration_table.find(event_id);
+
+    check(distrib_events_itr != _distribution_event_registration_table.end(),
+      "invalid event id");
+
+    check(distrib_events_itr->event_status == DEV_FUNDS_DISTRIBUTED, "not ready for cleanup");  
+
+    // clean up stats
+    distribution_stats_table _distribution_stats_table(get_self(), get_self().value);
+    auto events_index = _distribution_stats_table.get_index<name("eventkey")>();
+    for (auto i = events_index.lower_bound(event_id); i != events_index.upper_bound(event_id);) {
+        i = events_index.erase(i);
+    }
+
+    // clean up metadata
+    distrib_events_itr = _distribution_event_registration_table.erase(distrib_events_itr);
+
+}
+
 void fantasy::set_total_rewards_state(uint32_t& total_participants, uint32_t& total_rewards) {
       total_rewards = 20000*total_participants;
 }
+
 void fantasy::_mod_count( uint32_t& event_id, uint32_t& option_id, int8_t& delta) {
     distribution_stats_table _distribution_stats_table(get_self(), get_self().value);
     auto events_index = _distribution_stats_table.get_index<name("eventkey")>();
@@ -232,6 +284,7 @@ void fantasy::_mod_count( uint32_t& event_id, uint32_t& option_id, int8_t& delta
       events_itr++;
     }
 }
+
 
 void fantasy::_initiate_stats( uint32_t& event_id, vector<uint32_t>& option_ids) {
     distribution_stats_table _distribution_stats_table(get_self(), get_self().value);

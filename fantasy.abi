@@ -72,6 +72,16 @@
             ]
         },
         {
+            "name": "cleanupdist",
+            "base": "",
+            "fields": [
+                {
+                    "name": "event_id",
+                    "type": "uint32"
+                }
+            ]
+        },
+        {
             "name": "distribute",
             "base": "",
             "fields": [
@@ -430,6 +440,20 @@
                     "type": "uint32"
                 }
             ]
+        },
+        {
+            "name": "xfertodev",
+            "base": "",
+            "fields": [
+                {
+                    "name": "event_id",
+                    "type": "uint32"
+                },
+                {
+                    "name": "dev_account",
+                    "type": "name"
+                }
+            ]
         }
     ],
     "actions": [
@@ -451,6 +475,11 @@
         {
             "name": "blockuser",
             "type": "blockuser",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "cleanupdist",
+            "type": "cleanupdist",
             "ricardian_contract": ""
         },
         {
@@ -496,6 +525,11 @@
         {
             "name": "useroption",
             "type": "useroption",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "xfertodev",
+            "type": "xfertodev",
             "ricardian_contract": ""
         }
     ],
