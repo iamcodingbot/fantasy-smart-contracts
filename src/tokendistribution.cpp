@@ -148,8 +148,8 @@ ACTION fantasy::useroption(name user, uint32_t event_id, uint32_t option_id) {
   }
 
 }
-//void token::issue( const name& to, const asset& quantity, const string& memo )
-
+// void token::issue( const name& to, const asset& quantity, const string& memo )
+// todo put total rewards as asset
 ACTION fantasy::issue(name to, uint32_t event_id, asset q, string m) {
   distribution_event_registration_table _distribution_event_registration_table(get_self(), get_self().value);
 
@@ -157,11 +157,15 @@ ACTION fantasy::issue(name to, uint32_t event_id, asset q, string m) {
 
   check(event_itr != _distribution_event_registration_table.end(), "invalid event");
 
+  uint32_t amount = event_itr->total_rewards;
+
+  eosio::asset quantity(amount, eosio::symbol("FANTASY",4));
+
   action{
     permission_level{get_self(), "active"_n},
     "eosio.token"_n,
     "issue"_n,
-    std::make_tuple(to, q, std::string("issued"))
+    std::make_tuple(to, quantity , std::string("issued"))
   }.send();
     
   _distribution_event_registration_table.modify(event_itr, get_self(), [&](auto& row)
@@ -182,19 +186,20 @@ ACTION fantasy::distribute(uint32_t event_id, uint16_t batch_size) {
     uint32_t total_participants = distrib_events_itr->total_participants;
     uint32_t total_winning_participants = distrib_events_itr->winning_participants;
     uint32_t total_rewards = distrib_events_itr->total_rewards;
-    double per_vote = total_rewards/total_winning_participants;
+    uint32_t per_vote = total_rewards/total_winning_participants;
 
     distribution_user_selection_table _distribution_user_selection_table(get_self(), get_self().value);
     auto user_selection_index = _distribution_user_selection_table.get_index<name("eventkey")>();
     check(user_selection_index.lower_bound(event_id) != user_selection_index.end(), "Distribution ended");
     for (auto i = user_selection_index.lower_bound(event_id); i != user_selection_index.upper_bound(event_id);) {
+    eosio::asset x(per_vote, eosio::symbol("FANTASY",4));
         if(i->option_id == winning_option_id) {
-          /*  action{
+            action{
               permission_level{get_self(), "active"_n},
               "eosio.token"_n,
               "transfer"_n,
-              std::make_tuple(get_self(), i->user,q, std::string("Party! Your hodl is free."))
-            }.send();*/
+              std::make_tuple(name("fantasy"), i->user,x, std::string("Party! Your hodl is free."))
+            }.send();
         }
         i = user_selection_index.erase(i);
         if(--batch_size == 0) {
@@ -204,7 +209,7 @@ ACTION fantasy::distribute(uint32_t event_id, uint16_t batch_size) {
 
 }
 void fantasy::set_total_rewards_state(uint32_t& total_participants, uint32_t& total_rewards) {
-      total_rewards = 2*total_participants;
+      total_rewards = 20000*total_participants;
 }
 void fantasy::_mod_count( uint32_t& event_id, uint32_t& option_id, int8_t& delta) {
     distribution_stats_table _distribution_stats_table(get_self(), get_self().value);
