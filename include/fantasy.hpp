@@ -8,31 +8,19 @@ CONTRACT fantasy : public contract {
   public:
     using contract::contract;
 
-    /* action to add new user. user will be able to 
-    *  participate but (TODO)funds will not be available for claiming
-    */
     ACTION initiateuser(name user);
-
-    // action to indicate successful kyc. ideal status for user.
     ACTION kycuser(name user);
-
-    /*
-    * action to block a user. user will not be able to participate 
-    * in any event and (TODO)funds will be given for any open event 
-    * in which user is participating
-    */ 
     ACTION blockuser(name user);
 
-    // action to add/modify distribution event and associated options for token distribution
-    ACTION adddistevent(uint32_t event_id, vector<uint32_t> option_ids, uint64_t event_close_time);
+    ACTION initiate(uint32_t event_id, vector<uint32_t> option_ids, uint64_t event_close_time);
+    ACTION openvote(uint32_t event_id);
+    ACTION closevote(uint32_t event_id);
+    ACTION eventclose(uint32_t event_id, uint32_t option_id);
+    ACTION tokenissue(name to, uint32_t event_id, asset q, string m);
+    ACTION publicxfer(uint32_t event_id, uint16_t batch_size);
+    ACTION devxfer(uint32_t event_id, name dev_account);
+    ACTION cleanupdist(uint32_t event_id);
 
-    // action to open an event for voting
-    ACTION openvoting(uint32_t event_id);
-
-    // action to add winning option for a distribution event
-    ACTION addoutcome(uint32_t event_id, uint32_t option_id);
-
-    // action to add user selection for a distribution event
     ACTION useroption(name user, uint32_t event_id, uint32_t option_id);
 
     // action to register fantasy event, associated rules 
@@ -55,11 +43,7 @@ CONTRACT fantasy : public contract {
     ACTION fanselection(name user, uint32_t fantasy_event_id,
        vector<uint32_t> selected_players, uint16_t weight);  
 
-    ACTION issue(name to, uint32_t event_id, asset q, string m);
-    ACTION distribute(uint32_t event_id, uint16_t batch_size);
-    ACTION xfertodev(uint32_t event_id, name dev_account);
 
-    ACTION cleanupdist(uint32_t event_id);
 
   private:
 
@@ -77,34 +61,35 @@ CONTRACT fantasy : public contract {
     typedef multi_index<name("users"), registered_users> users_table;
 
    enum event_status: uint8_t {
-      INITIATING= 0,
-      OPEN= 1,
-      CLOSED= 2,
-      ISSUED=3,
-      DISTRIBUTION_CLOSED= 4,
-      DEV_FUNDS_DISTRIBUTED= 5 
+      INITIATE= 0,
+      OPEN_VOTE= 1,
+      CLOSE_VOTE= 2,
+      EVENT_CLOSE= 3,
+      TOKEN_ISSUE=4,
+      PUBLIC_TOKEN_TRANSFER= 5,
+      DEV_TOKEN_TRANSFER= 6 
     };
 
-    TABLE distribution_event {
+    TABLE event_metadata
+    {
       uint32_t event_id;
       vector<uint32_t> option_ids;
-      uint64_t event_close_time;
-      uint8_t event_status = INITIATING;
-      uint32_t outcome_option_id;
-      uint64_t distribution_end_time;
+      uint64_t vote_close_time;
+      uint8_t status = INITIATING;
+      uint32_t winning_option_id;
       uint32_t total_participants;
       uint32_t winning_participants;
       uint32_t total_rewards;
       auto primary_key() const { return event_id; }
     };
-    typedef multi_index<name("disteventreg"), distribution_event> distribution_event_registration_table;
+    typedef multi_index<name("eventmd"), event_metadata> event_metadata_table;
 
-    TABLE distribution_user_selection {
-      uint128_t selection_id;
+    TABLE event_transactions {
+      uint128_t id;
       name user;
       uint64_t  event_id;
       uint32_t option_id;
-      auto primary_key() const { return selection_id; }
+      auto primary_key() const { return id; }
       uint128_t user_key() const {
         return user.value;
       }
@@ -112,12 +97,12 @@ CONTRACT fantasy : public contract {
         return event_id;
       }
     };
-    typedef multi_index<name("distusersel"), distribution_user_selection,
-    indexed_by<name("userkey"), const_mem_fun<distribution_user_selection, uint128_t, &distribution_user_selection::user_key>>,
-    indexed_by<name("eventkey"), const_mem_fun<distribution_user_selection, uint64_t, &distribution_user_selection::event_key>>
-    > distribution_user_selection_table;
+    typedef multi_index<name("eventtx"), event_transactions,
+    indexed_by<name("userkey"), const_mem_fun<event_transactions, uint128_t, &event_transactions::user_key>>,
+    indexed_by<name("eventkey"), const_mem_fun<event_transactions, uint64_t, &event_transactions::event_key>>
+    > event_transactions_table;
 
-    TABLE distribution_stats {
+    TABLE event_stats {
       uint64_t stat_id;
       uint64_t event_id;
       uint32_t option_id;
@@ -127,9 +112,9 @@ CONTRACT fantasy : public contract {
         return event_id;
       }
     };
-    typedef multi_index<name("diststats"), distribution_stats,
-    indexed_by<name("eventkey"), const_mem_fun<distribution_stats, uint64_t, &distribution_stats::event_key>>
-    > distribution_stats_table;
+    typedef multi_index<name("eventstats"), event_stats,
+    indexed_by<name("eventkey"), const_mem_fun<event_stats, uint64_t, &event_stats::event_key>>
+    > event_stats_table;
 
     struct player {
       uint32_t player_id;
