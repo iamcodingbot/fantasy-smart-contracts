@@ -27,4 +27,4 @@
 
 EOSIO_DISPATCH(fantasy, (initiateuser)(kycuser)(blockuser)
 (adddistevent)(openvoting)(addoutcome)(useroption)(issue)(distribute)(xfertodev)(cleanupdist)
-(regfanevent)(addplayer)(openfanevent))
+(fboot)(fplayeradd)(fopen)(fuserselect))
