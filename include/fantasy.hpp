@@ -92,10 +92,10 @@ CONTRACT fantasy : public contract {
     };
 
     enum player_type: uint8_t {
-      BAT= 0,
-      BOWL= 1,
-      WK= 2,
-      AR= 3
+      BAT= 1,
+      BOWL= 2,
+      WK= 3,
+      AR= 4
     };
 
     TABLE distribution_event {
@@ -189,5 +189,6 @@ CONTRACT fantasy : public contract {
     void _mod_count( uint32_t& event_id, uint32_t& option_id, int8_t& delta);
     void _initiate_stats( uint32_t& event_id, vector<uint32_t>& option_ids);
     void set_total_rewards_state(uint32_t& total_participants, uint32_t& total_rewards);
+    void set_player_map(vector<player> &base_player_data, map<uint32_t, player> &player_map);
 
 };

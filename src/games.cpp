@@ -121,6 +121,7 @@ ACTION fantasy::fuserselect(name user, uint32_t fantasy_event_id,
   
   map<uint16_t, uint8_t> team_count_map;
   map <uint32_t, player> player_map;
+  set_player_map(players, player_map);
   for(int i =0; i<selected_players.size(); i++) {
     uint32_t this_player_id = selected_players[i];
     auto itr = player_map.find(this_player_id);
@@ -165,5 +166,19 @@ ACTION fantasy::fuserselect(name user, uint32_t fantasy_event_id,
       row.weight = weight;
       row.selected_players = selected_players;
     });
+}
+
+void fantasy::set_player_map(vector<player> &base_player_data, map<uint32_t, player> &player_map) {
+  for(int i =0 ; i<base_player_data.size(); i++){
+   
+      player p;
+      p.player_id = base_player_data[i].player_id;
+      p.team_id = base_player_data[i].team_id;
+      p.cost =base_player_data[i].cost;
+      p.player_type_id =base_player_data[i].player_type_id;
+      p.score = base_player_data[i].score;
+    player_map.insert(pair<uint32_t, player>(p.player_id, p));  
+  }
+
 }
 
