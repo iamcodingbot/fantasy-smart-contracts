@@ -36,32 +36,6 @@
             ]
         },
         {
-            "name": "addplayer",
-            "base": "",
-            "fields": [
-                {
-                    "name": "fantasy_event_id",
-                    "type": "uint32"
-                },
-                {
-                    "name": "player_id",
-                    "type": "uint32"
-                },
-                {
-                    "name": "team_id",
-                    "type": "uint16"
-                },
-                {
-                    "name": "cost",
-                    "type": "uint8"
-                },
-                {
-                    "name": "player_type_id",
-                    "type": "uint8"
-                }
-            ]
-        },
-        {
             "name": "blockuser",
             "base": "",
             "fields": [
@@ -182,29 +156,7 @@
             ]
         },
         {
-            "name": "fanselection",
-            "base": "",
-            "fields": [
-                {
-                    "name": "user",
-                    "type": "name"
-                },
-                {
-                    "name": "fantasy_event_id",
-                    "type": "uint32"
-                },
-                {
-                    "name": "selected_players",
-                    "type": "uint32[]"
-                },
-                {
-                    "name": "weight",
-                    "type": "uint16"
-                }
-            ]
-        },
-        {
-            "name": "fantasy_meta_data",
+            "name": "fantasy_md",
             "base": "",
             "fields": [
                 {
@@ -240,8 +192,12 @@
                     "type": "uint8"
                 },
                 {
-                    "name": "max_participants",
+                    "name": "total_event_weight",
                     "type": "uint32"
+                },
+                {
+                    "name": "distribution_type",
+                    "type": "uint8"
                 },
                 {
                     "name": "base_player_data",
@@ -254,16 +210,16 @@
             ]
         },
         {
-            "name": "fantasy_user_selection",
+            "name": "fantasy_tx",
             "base": "",
             "fields": [
                 {
-                    "name": "user_selection_id",
+                    "name": "id",
                     "type": "uint128"
                 },
                 {
                     "name": "fantasy_event_id",
-                    "type": "uint32"
+                    "type": "uint64"
                 },
                 {
                     "name": "user",
@@ -279,6 +235,110 @@
                 },
                 {
                     "name": "user_score",
+                    "type": "uint16"
+                }
+            ]
+        },
+        {
+            "name": "fboot",
+            "base": "",
+            "fields": [
+                {
+                    "name": "fantasy_event_id",
+                    "type": "uint32"
+                },
+                {
+                    "name": "total_cost_limit",
+                    "type": "uint16"
+                },
+                {
+                    "name": "max_players",
+                    "type": "uint8"
+                },
+                {
+                    "name": "max_players_per_team",
+                    "type": "uint8"
+                },
+                {
+                    "name": "max_bat",
+                    "type": "uint8"
+                },
+                {
+                    "name": "max_bowl",
+                    "type": "uint8"
+                },
+                {
+                    "name": "max_wk",
+                    "type": "uint8"
+                },
+                {
+                    "name": "max_ar",
+                    "type": "uint8"
+                },
+                {
+                    "name": "distribution_type",
+                    "type": "uint8"
+                },
+                {
+                    "name": "total_event_weight",
+                    "type": "uint32"
+                }
+            ]
+        },
+        {
+            "name": "fopen",
+            "base": "",
+            "fields": [
+                {
+                    "name": "fantasy_event_id",
+                    "type": "uint32"
+                }
+            ]
+        },
+        {
+            "name": "fplayeradd",
+            "base": "",
+            "fields": [
+                {
+                    "name": "fantasy_event_id",
+                    "type": "uint32"
+                },
+                {
+                    "name": "player_id",
+                    "type": "uint32"
+                },
+                {
+                    "name": "team_id",
+                    "type": "uint16"
+                },
+                {
+                    "name": "cost",
+                    "type": "uint8"
+                },
+                {
+                    "name": "player_type_id",
+                    "type": "uint8"
+                }
+            ]
+        },
+        {
+            "name": "fuserselect",
+            "base": "",
+            "fields": [
+                {
+                    "name": "user",
+                    "type": "name"
+                },
+                {
+                    "name": "fantasy_event_id",
+                    "type": "uint32"
+                },
+                {
+                    "name": "selected_players",
+                    "type": "uint32[]"
+                },
+                {
+                    "name": "weight",
                     "type": "uint16"
                 }
             ]
@@ -326,16 +386,6 @@
             ]
         },
         {
-            "name": "openfanevent",
-            "base": "",
-            "fields": [
-                {
-                    "name": "fantasy_event_id",
-                    "type": "uint32"
-                }
-            ]
-        },
-        {
             "name": "openvoting",
             "base": "",
             "fields": [
@@ -364,48 +414,10 @@
                 {
                     "name": "player_type_id",
                     "type": "uint8"
-                }
-            ]
-        },
-        {
-            "name": "regfanevent",
-            "base": "",
-            "fields": [
-                {
-                    "name": "fantasy_event_id",
-                    "type": "uint32"
                 },
                 {
-                    "name": "total_cost_limit",
+                    "name": "score",
                     "type": "uint16"
-                },
-                {
-                    "name": "max_players",
-                    "type": "uint8"
-                },
-                {
-                    "name": "max_players_per_team",
-                    "type": "uint8"
-                },
-                {
-                    "name": "max_bat",
-                    "type": "uint8"
-                },
-                {
-                    "name": "max_bowl",
-                    "type": "uint8"
-                },
-                {
-                    "name": "max_wk",
-                    "type": "uint8"
-                },
-                {
-                    "name": "max_ar",
-                    "type": "uint8"
-                },
-                {
-                    "name": "max_participants",
-                    "type": "uint32"
                 }
             ]
         },
@@ -468,11 +480,6 @@
             "ricardian_contract": ""
         },
         {
-            "name": "addplayer",
-            "type": "addplayer",
-            "ricardian_contract": ""
-        },
-        {
             "name": "blockuser",
             "type": "blockuser",
             "ricardian_contract": ""
@@ -488,8 +495,23 @@
             "ricardian_contract": ""
         },
         {
-            "name": "fanselection",
-            "type": "fanselection",
+            "name": "fboot",
+            "type": "fboot",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "fopen",
+            "type": "fopen",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "fplayeradd",
+            "type": "fplayeradd",
+            "ricardian_contract": ""
+        },
+        {
+            "name": "fuserselect",
+            "type": "fuserselect",
             "ricardian_contract": ""
         },
         {
@@ -508,18 +530,8 @@
             "ricardian_contract": ""
         },
         {
-            "name": "openfanevent",
-            "type": "openfanevent",
-            "ricardian_contract": ""
-        },
-        {
             "name": "openvoting",
             "type": "openvoting",
-            "ricardian_contract": ""
-        },
-        {
-            "name": "regfanevent",
-            "type": "regfanevent",
             "ricardian_contract": ""
         },
         {
@@ -557,14 +569,14 @@
         },
         {
             "name": "fantasymd",
-            "type": "fantasy_meta_data",
+            "type": "fantasy_md",
             "index_type": "i64",
             "key_names": [],
             "key_types": []
         },
         {
-            "name": "fantasyus",
-            "type": "fantasy_user_selection",
+            "name": "fantasytx",
+            "type": "fantasy_tx",
             "index_type": "i64",
             "key_names": [],
             "key_types": []

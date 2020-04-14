@@ -4,7 +4,7 @@
 //TODO refactor constants
 //TODO empty value checks
 //TODO no transfer without kyc
-
+//TODO do not modify event if status not initiating
 ACTION fantasy::adddistevent(uint32_t event_id, vector<uint32_t> option_ids, uint64_t event_close_time) {
   require_auth(get_self());
 

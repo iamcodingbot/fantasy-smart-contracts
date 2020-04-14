@@ -44,7 +44,7 @@ CONTRACT fantasy : public contract {
     ACTION fboot(uint32_t fantasy_event_id, uint16_t total_cost_limit, 
         uint8_t max_players, uint8_t max_players_per_team, 
         uint8_t max_bat, uint8_t max_bowl, uint8_t max_wk, 
-        uint8_t max_ar, uint32_t max_participants, 
+        uint8_t max_ar,
         uint8_t distribution_type, uint32_t total_event_weight);
 
     // action to add a player to fantasy event
@@ -88,11 +88,14 @@ CONTRACT fantasy : public contract {
     enum fantasy_event_status: uint8_t {
       FANTASY_BOOTING= 0,
       FANTASY_PLAYER_ADDED= 1,
-      FANTASY_OPEN= 2,
-      CLOSED= 3,
-      ISSUED=4,
-      DISTRIBUTION_CLOSED= 5,
-      DEV_FUNDS_DISTRIBUTED= 6 
+      FANTASY_OPEN= 2
+    };
+
+    enum player_type: uint8_t {
+      BAT= 0,
+      BOWL= 1,
+      WK= 2,
+      AR= 3
     };
 
     TABLE distribution_event {
@@ -149,6 +152,7 @@ CONTRACT fantasy : public contract {
       uint16_t score;
     };
 
+
     TABLE fantasy_md {
       uint32_t fantasy_event_id;      
       uint16_t total_cost_limit;
@@ -168,14 +172,19 @@ CONTRACT fantasy : public contract {
 
     TABLE fantasy_tx {
       uint128_t id;
-      uint32_t fantasy_event_id;  
+      uint64_t fantasy_event_id;  
       name user;
       uint16_t weight;
       vector<uint32_t> selected_players;
       uint16_t user_score;
       auto primary_key() const { return id; }
+      uint64_t fantasy_event_key() const {
+        return fantasy_event_id;
+      } 
     };
-    typedef multi_index<name("fantasytx"), fantasy_tx> fantasy_tx_table;
+    typedef multi_index<name("fantasytx"), fantasy_tx,
+    indexed_by<name("fantasykey"), const_mem_fun<fantasy_tx, uint64_t, &fantasy_tx::fantasy_event_key>>>
+    fantasy_tx_table;
 
     void _mod_count( uint32_t& event_id, uint32_t& option_id, int8_t& delta);
     void _initiate_stats( uint32_t& event_id, vector<uint32_t>& option_ids);
